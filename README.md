@@ -61,7 +61,5 @@ $ python3 main.py
 # Game
 
 
-![squares-enemies-spawner copy](https://github.com/user-attachments/assets/cece93b5-2489-4b76-8b10-d9fc10cb3042)
-
 
 
