@@ -3,7 +3,8 @@
         "position": {
             "x": 320,
             "y": 180
-        }
+        },
+        "max_bullets": 4
     },
     "enemy_spawn_events": [
         {
