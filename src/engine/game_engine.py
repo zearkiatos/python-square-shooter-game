@@ -1,7 +1,7 @@
 import pygame
 import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
-from src.ecs.create.prefabric_creator import create_enemy_spawner, create_input_player, create_player_square
+from src.ecs.create.prefabric_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
@@ -43,6 +43,7 @@ class GameEngine:
         self._player_component_velocity = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
         create_enemy_spawner(self.ecs_world, self.levels_config)
         create_input_player(self.ecs_world)
+        create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity)
 
     def _calculate_time(self):
         self.clock.tick(self.framerate)
@@ -75,6 +76,7 @@ class GameEngine:
         self.enemies_config = read_json_file("assets/cfg/enemies.json")
         self.levels_config = read_json_file("assets/cfg/level_01.json")
         self.player_config = read_json_file("assets/cfg/player.json")
+        self.bullet_config = read_json_file("assets/cfg/bullet.json")
 
     def _do_action(self, c_input: CInputCommand):
         if c_input.name == "PLAYER_LEFT":
