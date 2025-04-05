@@ -60,7 +60,7 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_enemy_spawner(self.ecs_world, self.enemies_config, self.delta_time)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.levels_config)
-        self.block_bullet = system_bullet_limit(self.ecs_world, self.levels_config["player_spawn"])
+        self.block_bullet = system_bullet_limit(self.ecs_world, self.levels_config["player_spawn"], self.screen)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
