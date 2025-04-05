@@ -60,6 +60,7 @@ $ python3 main.py
 
 # Game
 
+![game-square-shooter](https://github.com/user-attachments/assets/cdc025db-b2d0-401c-be64-d4833ded3dcd)
 
 
 
