@@ -79,7 +79,7 @@ def create_input_player(world: esper.World):
         "PLAYER_FIRE", pygame.BUTTON_RIGHT))
 
 
-def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: int, direction: pygame.Vector2) -> int:
+def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: int, mouse_position: pygame.Vector2) -> int:
     size = pygame.Vector2(tuple(bullet_info["size"].values()))
     color = pygame.Color(tuple(bullet_info["color"].values()))
     player_position = world.component_for_entity(player_entity, CTransform)
@@ -88,7 +88,10 @@ def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: i
         player_position.position.x + player_surface.surface.get_width()/2 - size.x/2,
         player_position.position.y + player_surface.surface.get_height()/2 - size.y/2
     )
-    velocity = pygame.Vector2(bullet_info["velocity"], bullet_info["velocity"])
+    direction = (mouse_position - position).normalize()
+
+    velocity = pygame.Vector2(direction.x * bullet_info["velocity"],
+                              direction.y * bullet_info["velocity"])
 
     bullet_entity = create_square(world, size, position, velocity, color)
     world.add_component(bullet_entity, CTagBullet())
