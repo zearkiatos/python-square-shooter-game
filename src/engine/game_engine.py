@@ -1,8 +1,8 @@
 import pygame
 import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
-from src.ecs.components.c_transform import CTransform
 from src.ecs.create.prefabric_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square
+from src.ecs.systems.s_bullet_limit import system_bullet_limit
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
@@ -26,7 +26,6 @@ class GameEngine:
         self.framerate = self.window_config["window"]["framerate"]
         self.delta_time = 0
         self.bg_color = pygame.Color(background_color)
-        self._bullet_position = None
 
         self.ecs_world = esper.World()
 
@@ -61,6 +60,7 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_enemy_spawner(self.ecs_world, self.enemies_config, self.delta_time)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.levels_config)
+        self.block_bullet = system_bullet_limit(self.ecs_world, self.levels_config["player_spawn"])
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
@@ -106,5 +106,5 @@ class GameEngine:
         
         if c_input.name == "PLAYER_FIRE":
             if (c_input.phase == CommandPhase.START):
-                create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity, event.pos)
-                self._bullet_position = event.pos
+                if not self.block_bullet:
+                    create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity, event.pos)
