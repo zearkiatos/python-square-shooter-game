@@ -77,7 +77,7 @@ class GameEngine:
         self.player_config = read_json_file("assets/cfg/player.json")
         self.bullet_config = read_json_file("assets/cfg/bullet.json")
 
-    def _do_action(self, c_input: CInputCommand):
+    def _do_action(self, c_input: CInputCommand, event: pygame.event.Event):
         if c_input.name == "PLAYER_LEFT":
             if (c_input.phase == CommandPhase.START):
                 self._player_component_velocity.velocity.x -= self.player_config["input_velocity"]
@@ -104,6 +104,4 @@ class GameEngine:
         
         if c_input.name == "PLAYER_FIRE":
             if (c_input.phase == CommandPhase.START):
-                print("FIRE")
-            elif c_input.phase == CommandPhase.END:
-                print("STOP FIRE")
+                create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity, event.pos)
