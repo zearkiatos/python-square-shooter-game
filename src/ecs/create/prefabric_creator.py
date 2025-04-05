@@ -61,19 +61,25 @@ def create_player_square(world: esper.World, player_info: dict, player_level_inf
     world.add_component(player_entity, CTagPlayer())
     return player_entity
 
+
 def create_input_player(world: esper.World):
     input_left = world.create_entity()
     input_right = world.create_entity()
     input_up = world.create_entity()
     input_down = world.create_entity()
     input_right_mouse = world.create_entity()
-    world.add_component(input_left, CInputCommand("PLAYER_LEFT", pygame.K_LEFT))
-    world.add_component(input_right, CInputCommand("PLAYER_RIGHT", pygame.K_RIGHT))
+    world.add_component(input_left, CInputCommand(
+        "PLAYER_LEFT", pygame.K_LEFT))
+    world.add_component(input_right, CInputCommand(
+        "PLAYER_RIGHT", pygame.K_RIGHT))
     world.add_component(input_up, CInputCommand("PLAYER_UP", pygame.K_UP))
-    world.add_component(input_down, CInputCommand("PLAYER_DOWN", pygame.K_DOWN))
-    world.add_component(input_right_mouse, CInputCommand("PLAYER_FIRE", pygame.BUTTON_RIGHT))
+    world.add_component(input_down, CInputCommand(
+        "PLAYER_DOWN", pygame.K_DOWN))
+    world.add_component(input_right_mouse, CInputCommand(
+        "PLAYER_FIRE", pygame.BUTTON_RIGHT))
 
-def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: int) -> int:
+
+def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: int, mouse_position: pygame.Vector2) -> int:
     size = pygame.Vector2(tuple(bullet_info["size"].values()))
     color = pygame.Color(tuple(bullet_info["color"].values()))
     player_position = world.component_for_entity(player_entity, CTransform)
@@ -82,7 +88,11 @@ def create_bullet_square(world: esper.World, bullet_info: dict, player_entity: i
         player_position.position.x + player_surface.surface.get_width()/2 - size.x/2,
         player_position.position.y + player_surface.surface.get_height()/2 - size.y/2
     )
-    velocity = pygame.Vector2(0, 0)
+    direction = (mouse_position - position).normalize()
+
+    velocity = pygame.Vector2(direction.x * bullet_info["velocity"],
+                              direction.y * bullet_info["velocity"])
+
     bullet_entity = create_square(world, size, position, velocity, color)
     world.add_component(bullet_entity, CTagBullet())
     return bullet_entity
