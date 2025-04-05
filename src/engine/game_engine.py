@@ -43,7 +43,6 @@ class GameEngine:
         self._player_component_velocity = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
         create_enemy_spawner(self.ecs_world, self.levels_config)
         create_input_player(self.ecs_world)
-        create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity)
 
     def _calculate_time(self):
         self.clock.tick(self.framerate)
@@ -102,3 +101,9 @@ class GameEngine:
                 self._player_component_velocity.velocity.y += self.player_config["input_velocity"]
             elif c_input.phase == CommandPhase.END:
                 self._player_component_velocity.velocity.y -= self.player_config["input_velocity"]
+        
+        if c_input.name == "PLAYER_FIRE":
+            if (c_input.phase == CommandPhase.START):
+                print("FIRE")
+            elif c_input.phase == CommandPhase.END:
+                print("STOP FIRE")
