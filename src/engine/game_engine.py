@@ -12,6 +12,7 @@ from src.ecs.systems.s_screen_bounce import system_screen_bounce
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.utils.file_handler import read_json_file
 from src.ecs.components.c_velocity import CVelocity
+from src.utils.sounds import generate_laser_beep
 
 
 class GameEngine:
@@ -27,6 +28,7 @@ class GameEngine:
         self.framerate = self.window_config["window"]["framerate"]
         self.delta_time = 0
         self.bg_color = pygame.Color(background_color)
+        self.laser_sound = generate_laser_beep()
 
         self.ecs_world = esper.World()
 
@@ -109,4 +111,5 @@ class GameEngine:
         if c_input.name == "PLAYER_FIRE":
             if (c_input.phase == CommandPhase.START):
                 if not self.block_bullet:
+                    self.laser_sound.play()
                     create_bullet_square(self.ecs_world, self.bullet_config, self._player_entity, event.pos)
