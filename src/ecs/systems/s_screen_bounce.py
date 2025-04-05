@@ -13,7 +13,7 @@ def system_screen_bounce(world:esper.World, screen:pygame.Surface):
     c_velocity: CVelocity
     c_surface: CSurface
     c_tag_enemy: CTagEnemy
-    for entity, (c_transform, c_velocity, c_surface, c_tag_enemy) in components:
+    for _, (c_transform, c_velocity, c_surface, c_tag_enemy) in components:
         square_rectangle = c_surface.surface.get_rect(topleft=c_transform.position)
         if square_rectangle.left < 0 or square_rectangle.right > screen_reactangle.width:
             c_velocity.velocity.x *= -1

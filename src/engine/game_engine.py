@@ -3,6 +3,7 @@ import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.create.prefabric_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square
 from src.ecs.systems.s_bullet_limit import system_bullet_limit
+from src.ecs.systems.s_collision_bullet_enemy import system_collision_bullet_enemy
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
@@ -60,6 +61,7 @@ class GameEngine:
         system_screen_bounce(self.ecs_world, self.screen)
         system_enemy_spawner(self.ecs_world, self.enemies_config, self.delta_time)
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.levels_config)
+        system_collision_bullet_enemy(self.ecs_world)
         self.block_bullet = system_bullet_limit(self.ecs_world, self.levels_config["player_spawn"], self.screen)
         self.ecs_world._clear_dead_entities()
 
