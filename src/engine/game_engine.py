@@ -1,12 +1,15 @@
 import pygame
 import esper
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
+from src.ecs.components.c_surface import CSurface
+from src.ecs.components.c_transform import CTransform
 from src.ecs.create.prefabric_creator import create_bullet_square, create_enemy_spawner, create_input_player, create_player_square
 from src.ecs.systems.s_bullet_limit import system_bullet_limit
 from src.ecs.systems.s_collision_bullet_enemy import system_collision_bullet_enemy
 from src.ecs.systems.s_collision_player_enemy import system_collision_player_enemy
 from src.ecs.systems.s_input_player import system_input_player
 from src.ecs.systems.s_movement import system_movement
+from src.ecs.systems.s_player_limit import system_player_limit
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_screen_bounce import system_screen_bounce
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
@@ -45,6 +48,8 @@ class GameEngine:
     def _create(self):
         self._player_entity = create_player_square(self.ecs_world, self.player_config, self.levels_config["player_spawn"])
         self._player_component_velocity = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
+        self._player_component_transform = self.ecs_world.component_for_entity(self._player_entity, CTransform)
+        self._player_component_surface = self.ecs_world.component_for_entity(self._player_entity, CSurface)
         create_enemy_spawner(self.ecs_world, self.levels_config)
         create_input_player(self.ecs_world)
 
@@ -65,6 +70,7 @@ class GameEngine:
         system_collision_player_enemy(self.ecs_world, self._player_entity, self.levels_config)
         system_collision_bullet_enemy(self.ecs_world)
         self.block_bullet = system_bullet_limit(self.ecs_world, self.levels_config["player_spawn"], self.screen)
+        system_player_limit(self.ecs_world, self.screen)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
@@ -84,28 +90,29 @@ class GameEngine:
         self.bullet_config = read_json_file("assets/cfg/bullet.json")
 
     def _do_action(self, c_input: CInputCommand, event: pygame.event.Event):
+        square_rectangle = self._player_component_surface.surface.get_rect(topleft=self._player_component_transform.position)
         if c_input.name == "PLAYER_LEFT":
-            if (c_input.phase == CommandPhase.START):
+            if c_input.phase == CommandPhase.START and self._player_component_transform.position.x >= 0:
                 self._player_component_velocity.velocity.x -= self.player_config["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
+            elif c_input.phase == CommandPhase.END and square_rectangle.left > 0:
                 self._player_component_velocity.velocity.x += self.player_config["input_velocity"]
         
         if c_input.name == "PLAYER_RIGHT":
-            if (c_input.phase == CommandPhase.START):
+            if c_input.phase == CommandPhase.START and self._player_component_transform.position.x <= self.screen.get_width():
                 self._player_component_velocity.velocity.x += self.player_config["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
+            elif c_input.phase == CommandPhase.END and square_rectangle.right < self.screen.get_width():
                 self._player_component_velocity.velocity.x -= self.player_config["input_velocity"]
         
         if c_input.name == "PLAYER_UP":
-            if (c_input.phase == CommandPhase.START):
+            if c_input.phase == CommandPhase.START and self._player_component_transform.position.y >= 0:
                 self._player_component_velocity.velocity.y -= self.player_config["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
+            elif c_input.phase == CommandPhase.END and square_rectangle.top > 0:
                 self._player_component_velocity.velocity.y += self.player_config["input_velocity"]
 
         if c_input.name == "PLAYER_DOWN":
-            if (c_input.phase == CommandPhase.START):
+            if c_input.phase == CommandPhase.START and self._player_component_transform.position.y <= self.screen.get_height():
                 self._player_component_velocity.velocity.y += self.player_config["input_velocity"]
-            elif c_input.phase == CommandPhase.END:
+            elif c_input.phase == CommandPhase.END and square_rectangle.bottom < self.screen.get_height():
                 self._player_component_velocity.velocity.y -= self.player_config["input_velocity"]
         
         if c_input.name == "PLAYER_FIRE":
